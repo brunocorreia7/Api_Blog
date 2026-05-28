@@ -3,17 +3,21 @@ from datetime import timedelta
 from pathlib import Path
 
 import drf_spectacular
+from dotenv import load_data, load_dotenv # Importe o load_dotenv
 
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Carrega as variáveis do arquivo .env
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = 'django-insecure-izcoez!#ej!x2$dym-u*m5x-#(c1ix^xxjxbucvtdvhew3+ayv'
+# 3. Altere a linha da SECRET_KEY para ficar assim:
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-chave-temporaria-de-desenvolvimento')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = []
 
