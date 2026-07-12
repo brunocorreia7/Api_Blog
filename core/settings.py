@@ -3,7 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import drf_spectacular
-from dotenv import load_data, load_dotenv # Importe o load_dotenv
+from dotenv import load_dotenv
 
 
 
