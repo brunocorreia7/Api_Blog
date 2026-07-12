@@ -2,9 +2,6 @@
 
 Um metrônomo profissional moderno, responsivo e com suporte offline para músicos. Construído como uma Progressive Web App (PWA) com tecnologias web puras.
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 
 ## ✨ Características
 
@@ -154,15 +151,7 @@ As cores estão definidas como variáveis CSS. Para modificar:
 2. Abra `index.html` em um navegador local
 3. Execute em um servidor web local (recomendado) para funcionalidade offline:
 
-```bash
-# Com Python 3
-python -m http.server 8000
 
-# Com Node.js
-npx http-server
-```
-
-Então acesse `http://localhost:8000`
 
 ### Estrutura de Código
 
@@ -179,39 +168,12 @@ Então acesse `http://localhost:8000`
 - `deleteMusic(index)` - Remove música da setlist
 - `updateBeatIndicator()` - Atualiza indicador visual
 
-## 🐛 Troubleshooting
-
-### "Nenhum som saindo"
-- Verifique se o volume do dispositivo está ativo
-- Tente clicar na página para "descongelar" o áudio (requerimento de navegadores modernos)
-- Verifique o console do desenvolvedor para erros
-
-### "Dados não estão sendo salvos"
-- Verifique se o LocalStorage está habilitado
-- Tente limpar cache do navegador
-- Alguns navegadores em modo incógnito podem não permitir LocalStorage
-
-### "Service Worker não funciona"
-- A aplicação deve estar em HTTPS para service workers persistentes
-- Em desenvolvimento local (localhost), HTTP é permitido
-- Verifique o Console > Application > Service Workers
-
-## 📄 Licença
-
-Projeto open source. Sinta-se livre para usar, modificar e distribuir.
 
 ## 👨‍💻 Autor
 
 Desenvolvido por **Bruno Correia**
 
-## 🤝 Contribuições
 
-Contribuições são bem-vindas! Sinta-se livre para:
-- Reportar bugs
-- Sugerir novas funcionalidades
-- Melhorar a documentação
-
----
 
 **Versão:** 1.0  
 **Última atualização:** Julho 2026  
