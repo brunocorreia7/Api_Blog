@@ -1,0 +1,16 @@
+{
+  "name": "Metrônomo PRO - Live Edition",
+  "short_name": "Metrônomo",
+  "description": "Metrônomo profissional para músicos com setlist offline.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00ff95",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3043/3043663.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ff95">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Metrônomo PRO - Live Edition</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card: #161616;
+            --text: #ffffff;
+            --primary: #00ff95;
+            --secondary: #252525;
+            --accent: #ff3e3e;
+        }
+
+        .light {
+            --bg: #f0f0f0;
+            --card: #ffffff;
+            --text: #1a1a1a;
+            --secondary: #e0e0e0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 { text-align: center; font-weight: 800; letter-spacing: -1px; margin-bottom: 25px; }
+        h3 { margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
+
+        input, select, button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        button {
+            cursor: pointer;
+            background: var(--primary);
+            color: #000;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
+        
+        .btn-outline {
+            background: var(--secondary);
+            color: var(--text);
+        }
+
+        .btn-danger { background: var(--accent); color: white; }
+
+        .row { display: flex; gap: 10px; align-items: center; }
+        .row > * { flex: 1; }
+
+        /* Estilo da lista de músicas no topo */
+        #musicList {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .bpm-display { font-size: 3.5rem; font-weight: 900; text-align: center; margin: 10px 0; color: var(--primary); }
+
+        .beat-indicator { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .beat-dot { width: 16px; height: 16px; border-radius: 50%; background: #333; transition: 0.1s; border: 2px solid transparent; }
+        .beat-dot.current { background: var(--primary); transform: scale(1.3); box-shadow: 0 0 15px var(--primary); }
+
+        label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-top: 15px; display: block; }
+        
+        .music-item {
+            background: var(--secondary);
+            padding: 15px;
+            border-radius: 16px;
+            margin-top: 12px;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+        .music-item.active-item {
+            border-color: var(--primary);
+            background: #1e1e1e;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>METRÔNOMO PRO</h1>
+
+    <div class="card">
+        <h3>Músicas Salvas</h3>
+        <div id="musicList"></div>
+    </div>
+
+    <div class="card">
+        <div class="bpm-display" id="bpmDisplay">120</div>
+
+        <div class="row">
+            <button class="btn-outline" onclick="changeBpm(-5)">-5</button>
+            <button class="btn-outline" onclick="changeBpm(-1)">-1</button>
+            <button class="btn-outline" onclick="changeBpm(1)">+1</button>
+            <button class="btn-outline" onclick="changeBpm(5)">+5</button>
+        </div>
+
+        <div class="row" style="margin-top: 15px;">
+            <div>
+                <label>Fórmula</label>
+                <select id="mainSignature" onchange="updateMainConfig()">
+                    <option value="1/4">1/4 (Click Livre)</option>
+                    <option value="2/4">2/4</option>
+                    <option value="3/4">3/4</option>
+                    <option value="4/4" selected>4/4</option>
+                    <option value="5/4">5/4</option>
+                    <option value="6/8">6/8</option>
+                </select>
+            </div>
+            <div>
+                <label>Subdivisão</label>
+                <select id="mainSubdivision" onchange="updateMainConfig()">
+                    <option value="1">1 (Normal)</option>
+                    <option value="2">2 (Colcheia)</option>
+                    <option value="3">3 (Tercina)</option>
+                    <option value="4">4 (Semicolch.)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="beat-indicator" id="beatIndicator"></div>
+
+        <button id="toggleBtn" onclick="toggleMetronome()" style="font-size: 1.8rem; padding: 25px; margin-top: 20px;">START</button>
+        
+        <div class="row" style="margin-top: 15px;">
+            <button onclick="tapTempo()" class="btn-outline">TAP TEMPO</button>
+            <button onclick="toggleTheme()" class="btn-outline">MODO 🌓</button>
+        </div>
+
+        <label>Volume Master</label>
+        <input type="range" id="volume" min="0" max="1.5" step="0.05" value="0.8">
+        
+        <label>Timbre</label>
+        <select id="soundType">
+            <option value="digital">Digital Sharp</option>
+            <option value="woodblock">Woodblock</option>
+            <option value="sidestick">Sidestick</option>
+            <option value="sine">Beep Clássico</option>
+        </select>
+    </div>
+
+    <div class="card">
+        <h3>Adicionar à Setlist</h3>
+        <input type="text" id="musicName" placeholder="Nome da Música">
+        <div class="row">
+            <input type="number" id="musicBpm" placeholder="BPM" value="120">
+            <select id="timeSignature">
+                <option value="1/4">1/4</option>
+                <option value="2/4">2/4</option>
+                <option value="3/4">3/4</option>
+                <option value="4/4" selected>4/4</option>
+                <option value="5/4">5/4</option>
+                <option value="6/8">6/8</option>
+            </select>
+            <select id="timeSubdivision">
+                <option value="1">Subdiv: 1</option>
+                <option value="2">Subdiv: 2</option>
+                <option value="3">Subdiv: 3</option>
+                <option value="4">Subdiv: 4</option>
+            </select>
+        </div>
+        <button onclick="saveMusic()">SALVAR NA LISTA</button>
+    </div>
+</div>
+
+<script>
+    let audioContext = null;
+    let compressor = null;
+    let nextNoteTime = 0.0;
+    let scheduleAheadTime = 0.1;
+    let lookahead = 25.0;
+    let timerID = null;
+
+    let isPlaying = false;
+    let bpm = 120;
+    let beatsPerMeasure = 4;
+    let currentSubdivision = 1;
+    let currentSubBeat = 0;
+    let currentBeat = 0;
+    let tapTimes = [];
+    let activeMusicIndex = null;
+
+    function initAudio() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        compressor = audioContext.createDynamicsCompressor();
+        compressor.threshold.setValueAtTime(-15, audioContext.currentTime);
+        compressor.knee.setValueAtTime(30, audioContext.currentTime);
+        compressor.ratio.setValueAtTime(12, audioContext.currentTime);
+        compressor.attack.setValueAtTime(0, audioContext.currentTime);
+        compressor.release.setValueAtTime(0.25, audioContext.currentTime);
+        compressor.connect(audioContext.destination);
+    }
+
+    function updateMainConfig() {
+        const sigValue = document.getElementById("mainSignature").value;
+        const subValue = parseInt(document.getElementById("mainSubdivision").value);
+        beatsPerMeasure = parseInt(sigValue.split("/")[0]);
+        currentSubdivision = subValue;
+        
+        if (isPlaying) {
+            currentSubBeat = 0;
+            currentBeat = 0;
+        }
+        updateBeatIndicator();
+    }
+
+    function playClick(time, isFirstBeat, isSubdivision) {
+        const osc = audioContext.createOscillator();
+        const envelope = audioContext.createGain();
+        const soundType = document.getElementById("soundType").value;
+        
+        switch(soundType) {
+            case "digital":
+                osc.type = "square";
+                osc.frequency.setValueAtTime(isSubdivision ? 600 : 1000, time);
+                break;
+            case "woodblock":
+                osc.type = "triangle";
+                osc.frequency.setValueAtTime(isSubdivision ? 400 : 750, time);
+                break;
+            case "sidestick":
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(isSubdivision ? 150 : 250, time);
+                break;
+            default:
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(isSubdivision ? 300 : 500, time);
+        }
+
+        const vol = parseFloat(document.getElementById("volume").value) * (isSubdivision ? 0.3 : 1);
+        envelope.gain.setValueAtTime(0, time);
+        envelope.gain.linearRampToValueAtTime(vol, time + 0.002);
+        envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
+
+        osc.connect(envelope);
+        envelope.connect(compressor);
+        osc.start(time);
+        osc.stop(time + 0.06);
+
+        const delay = (time - audioContext.currentTime) * 1000;
+        if (!isSubdivision) {
+            setTimeout(() => { updateVisuals(); }, delay);
+        }
+    }
+
+    function scheduler() {
+        while (nextNoteTime < audioContext.currentTime + scheduleAheadTime) {
+            scheduleNote(currentSubBeat, nextNoteTime);
+            advanceNote();
+        }
+        timerID = setTimeout(scheduler, lookahead);
+    }
+
+    function scheduleNote(subBeatIndex, time) {
+        const isMainBeat = subBeatIndex % currentSubdivision === 0;
+        const isFirstBeat = subBeatIndex === 0;
+        playClick(time, isFirstBeat, !isMainBeat);
+    }
+
+    function advanceNote() {
+        const secondsPerBeat = 60.0 / bpm;
+        nextNoteTime += secondsPerBeat / currentSubdivision;
+        currentSubBeat = (currentSubBeat + 1) % (beatsPerMeasure * currentSubdivision);
+    }
+
+    // BOTÃO PRINCIPAL START/STOP
+    function toggleMetronome() {
+        if (!audioContext) initAudio();
+        if (audioContext.state === 'suspended') audioContext.resume();
+
+        isPlaying = !isPlaying;
+
+        if (isPlaying) {
+            // BUG FIX: Se iniciou pelo botão principal, limpa a música ativa da lista
+            // Mas apenas se a função não foi chamada por uma música específica
+            if (arguments.length === 0) activeMusicIndex = null;
+
+            currentSubBeat = 0;
+            currentBeat = 0;
+            nextNoteTime = audioContext.currentTime + 0.05;
+            scheduler();
+            document.getElementById("toggleBtn").innerText = "STOP";
+            document.getElementById("toggleBtn").style.background = "var(--accent)";
+        } else {
+            clearTimeout(timerID);
+            document.getElementById("toggleBtn").innerText = "START";
+            document.getElementById("toggleBtn").style.background = "var(--primary)";
+        }
+        renderMusics(); 
+    }
+
+    function updateVisuals() {
+        currentBeat = (currentBeat % beatsPerMeasure) + 1;
+        const dots = document.querySelectorAll(".beat-dot");
+        dots.forEach((dot, index) => {
+            dot.classList.toggle("current", index === currentBeat - 1);
+        });
+    }
+
+    function updateBeatIndicator() {
+        const container = document.getElementById("beatIndicator");
+        container.innerHTML = "";
+        for (let i = 0; i < beatsPerMeasure; i++) {
+            const dot = document.createElement("div");
+            dot.className = "beat-dot";
+            container.appendChild(dot);
+        }
+    }
+
+    function changeBpm(amount) {
+        bpm = Math.max(30, Math.min(280, bpm + amount));
+        document.getElementById("bpmDisplay").innerText = bpm;
+        document.getElementById("musicBpm").value = bpm;
+        // Se mudou o BPM manualmente, a música da lista não é mais a "dona" do tempo atual
+        activeMusicIndex = null;
+        renderMusics();
+    }
+
+    function tapTempo() {
+        const now = Date.now();
+        tapTimes.push(now);
+        if (tapTimes.length > 4) tapTimes.shift();
+        if (tapTimes.length >= 2) {
+            const avg = (tapTimes[tapTimes.length-1] - tapTimes[0]) / (tapTimes.length - 1);
+            bpm = Math.round(60000 / avg);
+            document.getElementById("bpmDisplay").innerText = bpm;
+            activeMusicIndex = null;
+            renderMusics();
+        }
+    }
+
+    function saveMusic() {
+        const name = document.getElementById("musicName").value || "Sem Nome";
+        const mBpm = document.getElementById("musicBpm").value;
+        const sig = document.getElementById("timeSignature").value;
+        const sub = document.getElementById("timeSubdivision").value;
+        
+        const musics = JSON.parse(localStorage.getItem("musics_v2") || "[]");
+        musics.push({ name, bpm: mBpm, signature: sig, subdivision: sub });
+        localStorage.setItem("musics_v2", JSON.stringify(musics));
+        
+        document.getElementById("musicName").value = "";
+        renderMusics();
+    }
+
+    function renderMusics() {
+        const list = document.getElementById("musicList");
+        const musics = JSON.parse(localStorage.getItem("musics_v2") || "[]");
+        list.innerHTML = "";
+        
+        if (musics.length === 0) {
+            list.innerHTML = "<p style='opacity:0.5; text-align:center;'>Nenhuma música salva.</p>";
+            return;
+        }
+
+        musics.forEach((m, index) => {
+            const isCurrentActive = isPlaying && activeMusicIndex === index;
+            const div = document.createElement("div");
+            div.className = `music-item ${isCurrentActive ? 'active-item' : ''}`;
+            div.innerHTML = `
+                <div class="row">
+                    <div style="flex: 2" onclick="loadMusic(${index})">
+                        <strong>${m.name}</strong><br>
+                        <small>${m.bpm} BPM • ${m.signature} (Sub: ${m.subdivision || 1})</small>
+                    </div>
+                    <button onclick="loadMusic(${index})" 
+                            style="padding: 10px; flex: 0.8; background: ${isCurrentActive ? 'var(--accent)' : 'var(--primary)'}; color: ${isCurrentActive ? 'white' : 'black'}">
+                        ${isCurrentActive ? 'STOP' : 'PLAY'}
+                    </button>
+                    <button class="btn-danger" onclick="deleteMusic(${index})" style="padding: 10px; flex: 0.3">X</button>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function loadMusic(index) {
+        const musics = JSON.parse(localStorage.getItem("musics_v2"));
+        const m = musics[index];
+        
+        // Se clicar na música que já está ativa, desliga o metrônomo
+        if (isPlaying && activeMusicIndex === index) {
+            toggleMetronome(true); // Passamos um argumento para indicar chamada via música
+            return;
+        }
+
+        bpm = parseInt(m.bpm);
+        document.getElementById("mainSignature").value = m.signature;
+        document.getElementById("mainSubdivision").value = m.subdivision || "1";
+        
+        updateMainConfig();
+        document.getElementById("bpmDisplay").innerText = bpm;
+
+        if (!audioContext) initAudio();
+        if (audioContext.state === 'suspended') audioContext.resume();
+
+        if (isPlaying) {
+            clearTimeout(timerID);
+            isPlaying = false;
+        }
+
+        activeMusicIndex = index;
+        toggleMetronome(true); // Passamos um argumento para não limpar o activeMusicIndex
+    }
+
+    function deleteMusic(index) {
+        if(confirm("Excluir música da lista?")) {
+            const musics = JSON.parse(localStorage.getItem("musics_v2"));
+            musics.splice(index, 1);
+            localStorage.setItem("musics_v2", JSON.stringify(musics));
+            if (activeMusicIndex === index) activeMusicIndex = null;
+            renderMusics();
+        }
+    }
+
+    function toggleTheme() { document.body.classList.toggle("light"); }
+
+    // Registro do Service Worker para modo Offline
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+            .then(reg => console.log('Offline Ready!', reg))
+            .catch(err => console.log('Erro ao registrar Service Worker', err));
+    });
+}
+
+
+    updateBeatIndicator();
+    renderMusics();
+</script>
+</body>
+</html>
