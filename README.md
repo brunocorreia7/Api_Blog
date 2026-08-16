@@ -1,180 +1,155 @@
-# 🎵 Metrônomo PRO - Live Edition
+# API de Blog (Django + DRF)
 
-Um metrônomo profissional moderno, responsivo e com suporte offline para músicos. Construído como uma Progressive Web App (PWA) com tecnologias web puras.
+Projeto Django com Django REST Framework para gerenciar um blog (categorias, posts, comentários) e autenticação via JWT.
 
+## Requisitos
 
-## ✨ Características
+- Python 3.10+ (ou conforme seu ambiente)
+- Virtualenv/venv recomendado
+- Dependências listadas em `requirements.txt` (instale com pip)
 
-### Funcionalidades Principais
-- ⏱️ **Metrônomo Configurável** - Ajuste BPM de forma intuitiva
-- 🎼 **Assinaturas de Tempo** - Suporte a diferentes time signatures (4/4, 3/4, 6/8, etc)
-- 🔄 **Subdivisões** - Configure subdivisões de batida para maior precisão
-- 📚 **Setlist Profissional** - Crie e gerencie listas de músicas com configurações personalizadas
-- 🟢 **Indicador Visual** - Visualize as batidas em tempo real
-- 🌙 **Tema Claro/Escuro** - Alternar entre temas para melhor conforto visual
+## Instalação (local)
 
-### Características Técnicas
-- 📱 **Responsivo** - Funciona perfeitamente em desktop, tablet e mobile
-- 🔌 **Offline First** - Funciona completamente sem internet (PWA)
-- 💾 **Persistência Local** - Todas as configurações são salvas no LocalStorage
-- 🔊 **Web Audio API** - Som de alta qualidade gerado em tempo real
-- 🚀 **Instalável** - Pode ser instalado como aplicativo nativo
+1. Criar e ativar ambiente virtual:
 
-## 🚀 Como Usar
-
-### Acesso Online
-Acesse diretamente em seu navegador (quando implementado em um servidor)
-
-### Instalação como App
-1. Abra a aplicação no navegador
-2. Clique no ícone de instalação (endereço ou menu)
-3. Selecione "Instalar"
-4. O app será adicionado à sua tela inicial
-
-### Modo Offline
-Após a primeira visita, o app fica disponível offline graças ao Service Worker. Todos os dados são salvos localmente no seu dispositivo.
-
-## 📖 Guia de Funcionalidades
-
-### Metrônomo Básico
-1. **BPM (Batidas por Minuto)** - Ajuste com os botões + e - ou digite diretamente
-2. **Start/Stop** - Clique no botão central para iniciar/parar o metrônomo
-3. **Signature** - Selecione o compasso (4/4, 3/4, 6/8, etc)
-4. **Subdivision** - Configure quantas subdivisões por batida
-
-### Gerenciador de Setlist
-1. **Adicionar Música**
-   - Preencha Nome, BPM, Assinatura e Subdivisão
-   - Clique em "Adicionar à Lista"
-   - A música é salva no seu dispositivo
-
-2. **Carregar Música**
-   - Clique em "PLAY" ao lado da música desejada
-   - As configurações serão carregadas automaticamente
-   - O metrônomo iniciará em seguida
-
-3. **Excluir Música**
-   - Clique no botão "X" para remover da lista
-   - Confirme a exclusão
-
-### Tema
-- Clique no ícone de tema para alternar entre modo escuro e claro
-- A preferência é salva automaticamente
-
-## 🛠️ Estrutura do Projeto
-
-```
-metronomojs/
-├── index.html          # Página principal (HTML, CSS e JS embutidos)
-├── manifest.json       # Arquivo de configuração PWA
-├── service-worker.js   # Arquivo para suporte offline
-└── README.md          # Este arquivo
+```bash
+python -m venv .venv
+# Windows
+.\.venv\Scripts\activate
+# macOS / Linux
+source .venv/bin/activate
 ```
 
-### Arquivos
+2. Instalar dependências:
 
-#### `index.html`
-- **HTML**: Estrutura da interface
-- **CSS**: Estilos modernos com variáveis CSS e tema claro/escuro
-- **JavaScript**: Toda a lógica da aplicação
-
-#### `manifest.json`
-Configuração da Progressive Web App:
-- Nome e descrição
-- Ícone da aplicação
-- Cores do tema
-- Modo de exibição standalone
-
-#### `service-worker.js`
-Implementa funcionalidade offline:
-- Cache de arquivos na instalação
-- Estratégia "cache first" com fallback para rede
-- Funciona sem internete após primeira visita
-
-## 💾 Armazenamento de Dados
-
-Todos os dados são salvos no **LocalStorage** do navegador:
-- Configurações do metrônomo
-- Lista de músicas (setlist)
-- Preferência de tema
-
-**Dados salvos:**
-```json
-{
-  "musics_v2": [
-    {
-      "name": "Música 1",
-      "bpm": 120,
-      "signature": "4/4",
-      "subdivision": 1
-    }
-  ]
-}
+```bash
+pip install -r requirements.txt
 ```
 
-**Nota:** Limpar dados do navegador resultará na perda de todas as configurações salvas.
+3. Aplicar migrações e criar superusuário:
 
-## 🎨 Customização
-
-### Cores
-As cores estão definidas como variáveis CSS. Para modificar:
-
-```css
-:root {
-    --bg: #0a0a0a;           /* Fundo */
-    --card: #161616;         /* Cards */
-    --text: #ffffff;         /* Texto */
-    --primary: #00ff95;      /* Cor primária (verde) */
-    --secondary: #252525;    /* Cor secundária */
-    --accent: #ff3e3e;       /* Cor de ênfase (vermelho) */
-}
+```bash
+python manage.py migrate
+python manage.py createsuperuser
 ```
 
-## 📱 Compatibilidade
+4. Rodar servidor de desenvolvimento:
 
-| Navegador | Desktop | Mobile |
-|-----------|---------|--------|
-| Chrome    | ✅ Excelente | ✅ Excelente |
-| Firefox   | ✅ Excelente | ✅ Excelente |
-| Safari    | ✅ Bom | ✅ Bom |
-| Edge      | ✅ Excelente | ✅ Excelente |
+```bash
+python manage.py runserver
+```
 
-**Requisitos:**
-- Web Audio API support
-- Service Worker support (para offline)
-- LocalStorage support
+A API estará disponível em `http://127.0.0.1:8000/`.
 
-## 🔧 Desenvolvimento
+## Verificações úteis
 
-### Instalação Local
-1. Clone ou baixe o repositório
-2. Abra `index.html` em um navegador local
-3. Execute em um servidor web local (recomendado) para funcionalidade offline:
+- Validar configurações do Django:
 
+```bash
+python manage.py check
+```
 
+- Rodar testes:
 
-### Estrutura de Código
+```bash
+python manage.py test
+```
 
-**Variáveis Principais:**
-- `bpm` - Batidas por minuto atual
-- `isPlaying` - Estado do metrônomo
-- `audioContext` - Contexto da Web Audio API
-- `activeMusicIndex` - Índice da música selecionada
+## Documentação da API
 
-**Funções Principais:**
-- `toggleMetronome()` - Inicia/para o metrônomo
-- `addMusic()` - Adiciona música à setlist
-- `loadMusic(index)` - Carrega configurações de uma música
-- `deleteMusic(index)` - Remove música da setlist
-- `updateBeatIndicator()` - Atualiza indicador visual
+Este projeto inclui `drf-spectacular` para gerar esquema OpenAPI/Swagger.
 
+- Configurações encontradas em `core/settings.py` (SPECTACULAR_SETTINGS).
+- Para expor o schema e a UI Swagger/Redoc, adicione as rotas do `drf_spectacular.views` em `core/urls.py`. Exemplo mínimo:
 
-## 👨‍💻 Autor
+```python
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
-Desenvolvido por **Bruno Correia**
+urlpatterns = [
+    # ... suas rotas
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+]
+```
 
+Depois disso, acesse `http://127.0.0.1:8000/api/docs/` para a UI do Swagger.
 
+## Autenticação JWT
 
-**Versão:** 1.0  
-**Última atualização:** Julho 2026  
-**Status:** Em desenvolvimento ativo
+O projeto inclui `rest_framework_simplejwt`. Endpoints típicos:
+
+- `POST /api/token/` — obter par de tokens (access/refresh)
+- `POST /api/token/refresh/` — renovar token
+
+(Verifique suas rotas em `blog/urls.py` ou onde tiver configurado os endpoints de auth.)
+
+Exemplo de requisição para obter token:
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"username":"seu_usuario","password":"sua_senha"}' http://127.0.0.1:8000/api/token/
+```
+
+## Uploads e mídia
+
+- `MEDIA_ROOT` e `MEDIA_URL` estão configurados em `core/settings.py`. Em dev, adicione `static()` em `core/urls.py` para servir mídia.
+
+## Exemplos de Endpoints
+
+As rotas principais estão em [blog/urls.py](blog/urls.py). Exemplo de endpoints expostos pelo `DefaultRouter` em `blog`:
+
+- Autenticação / Tokens:
+    - `POST /auth/register/` — registrar novo usuário
+    - `POST /auth/login/` — obter `access`/`refresh` (alias para `/token/`)
+    - `POST /token/` — obter tokens (access/refresh)
+    - `POST /token/refresh/` — renovar token
+
+- Recursos (ViewSets - CRUD):
+    - `GET /categories/` — listar categorias
+    - `POST /categories/` — criar categoria (autenticado/admin)
+    - `GET /categories/{id}/` — recuperar categoria
+    - `PUT/PATCH /categories/{id}/` — atualizar categoria
+    - `DELETE /categories/{id}/` — remover categoria
+
+    - `GET /posts/` — listar posts (suporta filtros: `?category=1`, `?search=termo`, `?ordering=-created_at`)
+    - `POST /posts/` — criar post (autenticado)
+    - `GET /posts/{id}/` — recuperar post
+    - `PUT/PATCH /posts/{id}/` — atualizar post (autor/admin)
+    - `DELETE /posts/{id}/` — excluir post (autor/admin)
+
+    - `GET /comments/` — listar comentários
+    - `POST /comments/` — criar comentário (autenticado)
+    - `GET /comments/{id}/` — recuperar comentário
+    - `PUT/PATCH /comments/{id}/` — atualizar comentário (autor)
+    - `DELETE /comments/{id}/` — remover comentário (autor)
+
+Exemplos `curl`:
+
+Obter token:
+
+```bash
+curl -X POST -H "Content-Type: application/json" \
+    -d '{"username":"seu_usuario","password":"sua_senha"}' \
+    http://127.0.0.1:8000/token/
+```
+
+Usar token para criar um post (substitua `YOUR_ACCESS_TOKEN`):
+
+```bash
+curl -X POST http://127.0.0.1:8000/posts/ \
+    -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d '{"title":"Meu Post","content":"Conteúdo...","category":1,"published":true}'
+```
+
+Listar posts com filtro e ordenação:
+
+```bash
+curl "http://127.0.0.1:8000/posts/?category=1&search=Django&ordering=-created_at"
+```
+
+## Notas e boas práticas
+
+- Mantenha `DEBUG=False` em produção e configure `ALLOWED_HOSTS` e variáveis secretas via variáveis de ambiente.
+- Considere usar `django-environ` ou `python-decouple` para gerenciar variáveis sensíveis.
+
+---
